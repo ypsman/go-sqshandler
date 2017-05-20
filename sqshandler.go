@@ -49,32 +49,32 @@ func (s *SqsConn) PullMessage() (*sqs.ReceiveMessageOutput, error) {
 }
 
 // PushMessage : Push a Message string to SQS
-func (s *SqsConn) PushMessage(msg string) error {
+func (s *SqsConn) PushMessage(msg string) (*sqs.SendMessageOutput, error) {
 	svc := getSession()
 	params := &sqs.SendMessageInput{
 		MessageBody:  aws.String(msg),
 		QueueUrl:     aws.String(s.QueueURL),
 		DelaySeconds: aws.Int64(s.PushDelay),
 	}
-	_, err := svc.SendMessage(params)
+	resp, err := svc.SendMessage(params)
 	if err != nil {
-		return err
+		return resp, err
 	}
-	return nil
+	return resp, nil
 }
 
 // DeleteMessage : Delete a msg from SQS
-func (s *SqsConn) DeleteMessage(msgid string) error {
+func (s *SqsConn) DeleteMessage(msgid string) (*sqs.DeleteMessageOutput, error) {
 	svc := getSession()
 	params := &sqs.DeleteMessageInput{
 		QueueUrl:      aws.String(s.QueueURL),
 		ReceiptHandle: aws.String(msgid),
 	}
-	_, err := svc.DeleteMessage(params)
+	resp, err := svc.DeleteMessage(params)
 	if err != nil {
-		return err
+		return resp, err
 	}
-	return nil
+	return resp, nil
 }
 
 // Info : return information from queue
